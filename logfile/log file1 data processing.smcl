@@ -1,0 +1,1083 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/yukerui/Desktop/log file1 data processing.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 Feb 2024, 12:18:45
+
+{com}. * Assignment 2 replication
+
+. * Since stata is hard to perform interpolation operations, I used python to fill in the missing quarterly data of S12 holding data. For the convenience of interpolation, I interpolated all years and quarters. Now I will pick the appropriate value.
+
+. * Clean the complete s12 data
+
+. use "/Users/yukerui/Desktop/complete s12 holding data.dta", clear
+
+. generate y = 1997 + floor(level_0/4)
+
+. generate m = 3 * (mod(level_0, 4) + 1)
+
+. sort fundno cusip y m
+
+. save  "/Users/yukerui/Desktop/complete s12 holding data.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/complete s12 holding data.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Clean the existing s12 data
+
+. use "/Users/yukerui/Desktop/s12holding.dta", clear
+
+. gen y = year(fdate)
+
+. gen m = month(fdate)
+
+. sort fundno cusip y m
+
+. save "/Users/yukerui/Desktop/s12holding.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/s12holding.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Merge the complete s12 data with the existing s12 data
+
+. use "/Users/yukerui/Desktop/complete s12 holding data.dta", clear
+
+. merge 1:1 fundno cusip y m using /Users/yukerui/Desktop/s12holding.dta 
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}      85,890,136
+{txt}{col 9}from master{col 30}{res}      85,890,136{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}      37,200,376{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+. * Remove values that do not meet the criteria
+
+. gen f = cond(missing(fdate), 1, 0)
+
+. by fundno cusip: gen start_new = f == 1 & f[_n-1] != 1
+
+. by fundno cusip: gen seq = sum(start_new)
+
+. sort fundno cusip seq
+
+. by fundno cusip seq: egen length = total(f)
+
+. 
+. * Here I assume that if a fund company does not disclose a stock for more than three consecutive quarters, I will regard the fund company as giving up holding the stock.
+
+. gen in_range = (y > 1997 | (y == 1997 & m >= 3)) & (y < 2004 | (y == 2004 & m <= 3))
+
+. drop if in_range & length > 3
+{txt}(33,715,156 observations deleted)
+
+{com}. gen date_flag = (y > 2004 | (y == 2004 & m >= 6)) & (y < 2007 | (y == 2007 & m <= 12))
+
+. drop if date_flag & _merge == 1
+{txt}(52,413,368 observations deleted)
+
+{com}. 
+. * Clean the merged data
+
+. drop _merge level_0 index f start_new seq length in_range date_flag
+
+. 
+. * Create an identifying variable to merge data with
+
+. gen key = cusip
+
+. 
+. * Generate a flag so that the key appears in the cusip in a different mutual fund once per quarter of the year and is marked sequentially. This way, the unique key y m flag identification variable combination can be obtained for merging.
+
+. sort key y m fundno
+
+. by key y m: gen flag = _n
+
+. sort key y m flag
+
+. save "/Users/yukerui/Desktop/complete s12 holding data", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/complete s12 holding data.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Clean CRSP data 
+
+. use "/Users/yukerui/Desktop/CRSP.dta", clear
+
+. 
+. * Select the data corresponding to the year and quarter
+
+. gen y = year(date)
+
+. gen m = month(date)
+
+. keep if m == 3 | m == 6 | m == 9 | m == 12 | m == 5
+{txt}(606,946 observations deleted)
+
+{com}. 
+. * Calculate market cap
+
+. * A negative price for PRC is a bid/ask average and not an actual closing price. Therefore I positive all PRCs.
+
+. replace PRC = abs(PRC)
+{txt}(18,869 real changes made)
+
+{com}. gen price = PRC * CFACPR
+{txt}(14,854 missing values generated)
+
+{com}. gen market_cap = price * SHROUT * 1000 * CFACSHR
+{txt}(14,854 missing values generated)
+
+{com}. bysort y m PERMCO: egen cap = total(market_cap)
+
+. format market_cap cap %20.0g
+
+. 
+. * The market value of May 31 is generated here for subsequent regression
+
+. bysort y PERMCO: gen cap5 = cap if m == 5
+{txt}(345,884 missing values generated)
+
+{com}. bysort y PERMCO: egen capmay = max(cap5)
+{txt}(7,029 missing values generated)
+
+{com}. drop if m == 5
+{txt}(86,929 observations deleted)
+
+{com}. drop cap5
+
+. format capmay %20.0g
+
+. 
+. * The NCUSIP in the CRSP database corresponds to the CUSIP in S12, so I construct the corresponding identification variables for merging.
+
+. gen key = NCUSIP
+{txt}(1,844 missing values generated)
+
+{com}. gen flag = 1
+
+. drop if key == ""
+{txt}(1,844 observations deleted)
+
+{com}. sort key y m flag
+
+. save "/Users/yukerui/Desktop/CRSP.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/CRSP.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Merge S12 holdings data with CRSP monthly data
+
+. use "/Users/yukerui/Desktop/complete s12 holding data.dta", clear
+
+. merge 1:1 key y m flag using /Users/yukerui/Desktop/CRSP.dta
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}      36,712,102
+{txt}{col 9}from master{col 30}{res}      36,665,025{txt}  (_merge==1)
+{col 9}from using{col 30}{res}          47,077{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         296,963{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(47,077 observations deleted)
+
+{com}. 
+. * Fill in the data of each cusip in different mutual funds. The variables to be filled in are ERMNO date NAMEENDT NCUSIP PERMCO CUSIP PRC SHROUT CFACPR price market_cap cap.
+
+. sort key y m flag
+
+. by key y m: replace PERMNO = PERMNO[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace date = date[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace NAMEENDT = NAMEENDT[1] if flag != 1
+{txt}(1,506,894 real changes made)
+
+{com}. by key y m: replace NCUSIP = NCUSIP[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace PERMCO = PERMCO[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace CUSIP = CUSIP[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace PRC = PRC[1] if flag != 1
+{txt}(34,691,276 real changes made)
+
+{com}. by key y m: replace SHROUT = SHROUT[1] if flag != 1
+{txt}(34,730,013 real changes made)
+
+{com}. by key y m: replace CFACPR = CFACPR[1] if flag != 1
+{txt}(34,730,013 real changes made)
+
+{com}. by key y m: replace price = price[1] if flag != 1
+{txt}(34,691,276 real changes made)
+
+{com}. by key y m: replace market_cap = market_cap[1] if flag != 1
+{txt}(34,691,276 real changes made)
+
+{com}. by key y m: replace cap = cap[1] if flag != 1
+{txt}(34,732,010 real changes made)
+
+{com}. by key y m: replace CFACSHR = CFACSHR[1] if flag != 1
+{txt}(34,730,013 real changes made)
+
+{com}. 
+. * Determine whether the total value of the stocks held by the fund is greater than the company's market capitalization
+
+. gen cap1 = shares * price
+{txt}(1,977,935 missing values generated)
+
+{com}. bysort y m PERMCO: egen cap2 = total(cap1)
+
+. format cap1 cap2 %20.0g
+
+. 
+. * Delete values that do not meet authors' criteria
+
+. drop if cap2 > cap
+{txt}(1,762,004 observations deleted)
+
+{com}. drop _merge flag
+
+. drop if y == 2007 | y == 1997
+{txt}(5,774,744 observations deleted)
+
+{com}. save "/Users/yukerui/Desktop/complete s12 holding data.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/complete s12 holding data.dta{rm}
+saved
+{p_end}
+
+{com}. * The end of merging s12 holding data with crsp data
+
+. 
+. * Determine whether a mutual fund is active, passive, or unclassified
+
+. * Merge CRSP MFDB with MFLINK1
+
+. * Clean CRSP MFDB
+
+. use "/Users/yukerui/Desktop/CRSPMFDB.dta", clear
+
+. format crsp_fundno crsp_portno %10.0g
+
+. sort crsp_fundno crsp_portno 
+
+. 
+. * we can find a crsp_fundno corresponds to a fund_name. Therefore, I decided to delete crsp_portno that appeared multiple times to ensure that crsp_fundno and fund_name correspond one to one.
+
+. duplicates drop crsp_fundno, force
+
+{p 0 4}{txt}Duplicates in terms of {res} crsp_fundno{p_end}
+
+{txt}(19,154 observations deleted)
+
+{com}. sort crsp_fundno
+
+. 
+. * Determine whether the fund name is active (ap=2) or passive (ap=1)
+
+. gen flag = 0
+
+. foreach pattern in "Index" "Idx" "Indx" "Ind " "Russell" "S & P" "S and P" "S&P" "SandP" "SP" "DOW" "Dow" "DJ" "MSCI" "Bloomberg" "KBW" "NASDAQ" "NYSE" "STOXX" "FTSE" "Wilshire" "Morningstar" "100" "400" "500" "600" "900" "1000" "1500" "2000" "5000" {c -(}
+{txt}  2{com}.     replace flag = 1 if regexm(fund_name, "`pattern'")
+{txt}  3{com}. {c )-}
+{txt}(2,608 real changes made)
+(8 real changes made)
+(7 real changes made)
+(0 real changes made)
+(460 real changes made)
+(0 real changes made)
+(0 real changes made)
+(454 real changes made)
+(0 real changes made)
+(101 real changes made)
+(0 real changes made)
+(89 real changes made)
+(2 real changes made)
+(287 real changes made)
+(60 real changes made)
+(8 real changes made)
+(65 real changes made)
+(5 real changes made)
+(5 real changes made)
+(77 real changes made)
+(30 real changes made)
+(39 real changes made)
+(91 real changes made)
+(15 real changes made)
+(43 real changes made)
+(3 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(21 real changes made)
+(0 real changes made)
+
+{com}. gen ap = 0
+
+. replace ap = 1 if flag == 1 | index_fund_flag != ""
+{txt}(7,181 real changes made)
+
+{com}. replace ap = 2 if ap == 0
+{txt}(51,727 real changes made)
+
+{com}. drop flag index_fund_flag ncusip cusip8 crsp_portno
+
+. ren fund_name fundname
+{res}
+{com}. 
+. * Merge crsp mutual fund data with mflink1
+
+. merge m:1 crsp_fundno using "/Users/yukerui/Desktop/mflink1_raw.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}          38,394
+{txt}{col 9}from master{col 30}{res}          35,368{txt}  (_merge==1)
+{col 9}from using{col 30}{res}           3,026{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}          23,540{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(38,394 observations deleted)
+
+{com}. drop _merge crsp_fundno cusip8 fund_name nasdaq ncusip merge_fundno
+
+. 
+. * Through observation, the difference between wficn corresponding to different fundnames is that the share class is different. Some wficn will correspond to A, B, C and other types of funds. However, these name changes will not affect the active or passive nature of the fund. Therefore, I decided to duplicates drop wficn.
+
+. duplicates drop wficn, force
+
+{p 0 4}{txt}Duplicates in terms of {res} wficn{p_end}
+
+{txt}(16,410 observations deleted)
+
+{com}. 
+. * Merge data with MFLINK2
+
+. merge 1:m wficn using "/Users/yukerui/Desktop/mflink2_raw.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         895,275
+{txt}{col 9}from master{col 30}{res}               4{txt}  (_merge==1)
+{col 9}from using{col 30}{res}         895,271{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         312,119{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(895,275 observations deleted)
+
+{com}. drop _merge country mgrcoab
+
+. gen y = year(fdate)
+
+. gen m = month(fdate)
+
+. 
+. * Merge data with s12 holdings
+
+. merge 1:m fundno y m using "/Users/yukerui/Desktop/complete s12 holding data.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}      14,706,993
+{txt}{col 9}from master{col 30}{res}         184,292{txt}  (_merge==1)
+{col 9}from using{col 30}{res}      14,522,701{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}      14,902,539{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 1
+{txt}(184,292 observations deleted)
+
+{com}. 
+. * If ap is missing, define the corresponding fund company as unclassified (ap=3)
+
+. replace ap = 3 if missing(ap)
+{txt}(14,522,701 real changes made)
+
+{com}. drop _merge ioc num_holdings assets
+
+. save "/Users/yukerui/Desktop/s12.dta"
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/s12.dta{rm}
+saved
+{p_end}
+
+{com}. * The end of determining whether the fund name is active, passive or unclassified
+
+. 
+. * Select stocks in the Russell 1000 and 2000 indexes
+
+. * Clean Russell data
+
+. use "/Users/yukerui/Desktop/russell_all.dta", clear
+
+. gen y = .
+{txt}(26,985 missing values generated)
+
+{com}. tostring yearmonth, generate(strvar)
+{txt}strvar generated as {res:str3}
+
+{com}. 
+. * Through observation, I discovered the correspondence between strvar and year. I use the following method for replacement.
+
+. replace y = 2006 if strvar == "557"
+{txt}(2,987 real changes made)
+
+{com}. replace y = 2005 if strvar == "545"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 2004 if strvar == "533"
+{txt}(2,998 real changes made)
+
+{com}. replace y = 2003 if strvar == "521"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 2002 if strvar == "509"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 2001 if strvar == "497"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 2000 if strvar == "485"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 1999 if strvar == "473"
+{txt}(3,000 real changes made)
+
+{com}. replace y = 1998 if strvar == "461"
+{txt}(3,000 real changes made)
+
+{com}. 
+. gen m = 6
+
+. ren cusip key
+{res}
+{com}. save "/Users/yukerui/Desktop/russell_all.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/russell_all.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Merge data and delete stocks that are not within the established range
+
+. use "/Users/yukerui/Desktop/s12.dta", clear
+
+. merge m:1 key y m using "/Users/yukerui/Desktop/russell_all.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}      23,489,642
+{txt}{col 9}from master{col 30}{res}      23,488,543{txt}  (_merge==1)
+{col 9}from using{col 30}{res}           1,099{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}       5,936,697{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. save "/Users/yukerui/Desktop/s12.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/s12.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. drop if m == 3 | m == 12
+{txt}(14,649,544 observations deleted)
+
+{com}. rename _merge me
+{res}
+{com}. 
+. * Get shares data for September
+
+. preserve 
+
+. keep if m == 9
+{txt}(7,319,256 observations deleted)
+
+{com}. keep fundno key PERMNO PERMCO CUSIP y shares SHROUT CFACSHR NCUSIP cusip
+
+. rename SHROUT SHROUT9
+{res}
+{com}. rename shares shares9
+{res}
+{com}. rename CFACSHR CFACSHR9
+{res}
+{com}. save "/Users/yukerui/Desktop/m9.dta", replace
+{txt}{p 0 4 2}
+(file {bf}
+/Users/yukerui/Desktop/m9.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/m9.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+
+. 
+. * Combine June and September data
+
+. keep if m == 6
+{txt}(7,457,539 observations deleted)
+
+{com}. merge 1:1 fundno key y using /Users/yukerui/Desktop/m9.dta
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}       2,273,991
+{txt}{col 9}from master{col 30}{res}       1,067,854{txt}  (_merge==1)
+{col 9}from using{col 30}{res}       1,206,137{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}       6,251,402{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(1,206,137 observations deleted)
+
+{com}. 
+. keep if me == 3
+{txt}(1,382,559 observations deleted)
+
+{com}. drop _merge me
+
+. format adj_mrktvalue %20.0g
+
+. save "/Users/yukerui/Desktop/s12.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/s12.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Select the top 250 companies ranked by russell2000
+
+. keep if r2000 == 1
+{txt}(4,357,925 observations deleted)
+
+{com}. gen r = .
+{txt}(1,578,772 missing values generated)
+
+{com}. duplicates drop key y, force
+
+{p 0 4}{txt}Duplicates in terms of {res} key y{p_end}
+
+{txt}(1,561,577 observations deleted)
+
+{com}. gsort y -adj_mrktvalue
+
+. by y: gen top250 = _n
+
+. replace r = 1 if top250 <= 250 & top250 != .
+{txt}(2,250 real changes made)
+
+{com}. keep if r == 1
+{txt}(14,945 observations deleted)
+
+{com}. keep key y r r2000
+
+. save "/Users/yukerui/Desktop/r1.dta"
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/r1.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Select the bottom 250 companies ranked by russell1000
+
+. use "/Users/yukerui/Desktop/s12.dta", clear
+
+. keep if r2000 == 0
+{txt}(1,578,772 observations deleted)
+
+{com}. gen r = .
+{txt}(4,357,925 missing values generated)
+
+{com}. duplicates drop key y, force
+
+{p 0 4}{txt}Duplicates in terms of {res} key y{p_end}
+
+{txt}(4,349,234 observations deleted)
+
+{com}. gsort y adj_mrktvalue
+
+. by y: gen bottom250 = _n
+
+. replace r = 1 if bottom250 <= 250 & bottom250 != .
+{txt}(2,250 real changes made)
+
+{com}. keep if r ==1
+{txt}(6,441 observations deleted)
+
+{com}. keep key y r r2000
+
+. rename r rr
+{res}
+{com}. save "/Users/yukerui/Desktop/r2.dta"
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/r2.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Select firms in the 250 bandwidth around the cutoff
+
+. use "/Users/yukerui/Desktop/s12.dta", clear
+
+. merge m:1 key y using /Users/yukerui/Desktop/r1.dta
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}       5,557,391
+{txt}{col 9}from master{col 30}{res}       5,557,391{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         379,306{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop _merge
+
+. merge m:1 key y using /Users/yukerui/Desktop/r2.dta
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}       5,536,628
+{txt}{col 9}from master{col 30}{res}       5,536,628{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         400,069{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop _merge
+
+. keep if r == 1 | rr == 1
+{txt}(5,157,322 observations deleted)
+
+{com}. save "/Users/yukerui/Desktop/s12.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/s12.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Calculate total mutual fund ownership, passive ownership, active ownership, unclassified ownership
+
+. format shares9 shares %20.0g
+
+. 
+. * Calculate Mutual fund ownership, passive, active and unclassified using September data.
+
+. preserve
+
+. gen total = shares9/(SHROUT9 * 1000 * CFACSHR9)
+{txt}(125,799 missing values generated)
+
+{com}. 
+. bysort PERMCO y: egen total_mf = sum(total)
+
+. bysort PERMCO y: egen passive = sum(total) if ap == 1
+{txt}(589,431 missing values generated)
+
+{com}. bysort PERMCO y: egen active = sum(total) if ap == 2
+{txt}(447,851 missing values generated)
+
+{com}. bysort PERMCO y: egen unclassified = sum(total) if ap == 3
+{txt}(521,468 missing values generated)
+
+{com}. 
+. bysort PERMCO y: egen total_mf_y = max(total_mf)
+
+. bysort PERMCO y: egen passive_y = max(passive) 
+{txt}(256 missing values generated)
+
+{com}. bysort PERMCO y: egen active_y = max(active) 
+
+. bysort PERMCO y: egen unclassified_y = max(unclassified )
+{txt}(43 missing values generated)
+
+{com}. 
+. replace total_mf_y = 0 if missing(total_mf_y)
+{txt}(0 real changes made)
+
+{com}. replace passive_y = 0 if missing(passive_y)
+{txt}(256 real changes made)
+
+{com}. replace active_y = 0 if missing(active_y)
+{txt}(0 real changes made)
+
+{com}. replace unclassified_y = 0 if missing(unclassified_y)
+{txt}(43 real changes made)
+
+{com}. 
+. sum total_mf_y passive_y active_y unclassified_y
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}total_mf_y {c |}{res}    779,375    .2218626      .13381          0   1.165149
+{txt}{space 3}passive_y {c |}{res}    779,375    .0280851    .0280581          0   .5154271
+{txt}{space 4}active_y {c |}{res}    779,375    .1636701    .1048662          0   1.010981
+{txt}unclassifi~y {c |}{res}    779,375    .0301074    .0302448          0   .3385769
+
+{com}. restore
+
+. 
+. * Calculate Mutual fund ownership, passive, active and unclassified using June data.
+
+. gen total = shares/(SHROUT * 1000 * CFACSHR)
+{txt}(45 missing values generated)
+
+{com}. drop if missing(shares) | shares == 0
+{txt}(0 observations deleted)
+
+{com}. 
+. bysort PERMCO y: egen total_mf = sum(total)
+
+. bysort PERMCO y: egen passive = sum(total) if ap == 1
+{txt}(589,431 missing values generated)
+
+{com}. bysort PERMCO y: egen active = sum(total) if ap == 2
+{txt}(447,851 missing values generated)
+
+{com}. bysort PERMCO y: egen unclassified = sum(total) if ap == 3
+{txt}(521,468 missing values generated)
+
+{com}. 
+. bysort PERMCO y: egen total_mf_y = max(total_mf)
+
+. bysort PERMCO y: egen passive_y = max(passive) 
+{txt}(256 missing values generated)
+
+{com}. bysort PERMCO y: egen active_y = max(active) 
+
+. bysort PERMCO y: egen unclassified_y = max(unclassified )
+{txt}(43 missing values generated)
+
+{com}. 
+. replace total_mf_y = 0 if missing(total_mf_y)
+{txt}(0 real changes made)
+
+{com}. replace passive_y = 0 if missing(passive_y)
+{txt}(256 real changes made)
+
+{com}. replace active_y = 0 if missing(active_y)
+{txt}(0 real changes made)
+
+{com}. replace unclassified_y = 0 if missing(unclassified_y)
+{txt}(43 real changes made)
+
+{com}. 
+. sum total_mf_y passive_y active_y unclassified_y
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}total_mf_y {c |}{res}    779,375    .2471398    .1448062          0   1.467181
+{txt}{space 3}passive_y {c |}{res}    779,375      .02866    .0294416          0    .550184
+{txt}{space 4}active_y {c |}{res}    779,375    .1821234    .1118438          0   1.304473
+{txt}unclassifi~y {c |}{res}    779,375    .0363565    .0357305          0   .5002662
+
+{com}. 
+. * After comparison, I found that June is closer to the value in the paper. So I choose June data.
+
+. save "/Users/yukerui/Desktop/summary.dta", replace
+{txt}{p 0 4 2}
+(file {bf}
+/Users/yukerui/Desktop/summary.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/summary.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Calculate the percentage of independent directors on the boards of each firm for each year 
+
+. use "/Users/yukerui/Desktop/independent director.dta", clear
+
+. format YEAR %10.0g
+
+. generate is_I = (CLASSIFICATION == "I")
+
+. egen ID = mean(is_I), by(CUSIP YEAR)
+
+. duplicates drop CUSIP YEAR, force
+
+{p 0 4}{txt}Duplicates in terms of {res} CUSIP YEAR{p_end}
+
+{txt}(121,496 observations deleted)
+
+{com}. rename YEAR y
+{res}
+{com}. rename CUSIP cusip6
+{res}
+{com}. save "/Users/yukerui/Desktop/independent director.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/independent director.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Merge data
+
+. use "/Users/yukerui/Desktop/summary.dta", clear
+
+. merge m:1 cusip6 y using "/Users/yukerui/Desktop/independent director.dta"
+{res}{txt}{p 0 7 2}
+(variable
+{bf:y} was {bf:float}, now {bf:double} to accommodate using data's values)
+{p_end}
+
+{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         278,478
+{txt}{col 9}from master{col 30}{res}         266,792{txt}  (_merge==1)
+{col 9}from using{col 30}{res}          11,686{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         512,583{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(11,686 observations deleted)
+
+{com}. drop _merge
+
+. save "/Users/yukerui/Desktop/summary.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/summary.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Calculate the poison pill removal and merge data
+
+. use "/Users/yukerui/Desktop/governance.dta", clear
+
+. format DUALCLASS PPILL LSPMT %10.0g
+
+. sort CN6 YEAR
+
+. by CN6: gen poison = PPILL == 0 & PPILL[_n-1] == 1
+
+. by CN6: gen greater = LSPMT == 0 & LSPMT[_n-1] == 1
+
+. rename YEAR y
+{res}
+{com}. rename CN6 cusip6
+{res}
+{com}. save "/Users/yukerui/Desktop/governance.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/governance.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. use "/Users/yukerui/Desktop/summary.dta", clear
+
+. merge m:1 cusip6 y using "/Users/yukerui/Desktop/governance.dta"
+{res}{txt}{p 0 7 2}
+(variable
+{bf:cusip6} was {bf:str6}, now {bf:str8} to accommodate using data's values)
+{p_end}
+
+{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         451,348
+{txt}{col 9}from master{col 30}{res}         443,577{txt}  (_merge==1)
+{col 9}from using{col 30}{res}           7,771{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         335,798{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(7,771 observations deleted)
+
+{com}. drop _merge
+
+. save "/Users/yukerui/Desktop/summary.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/summary.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Calculate the ROA and merge data
+
+. use "/Users/yukerui/Desktop/roa.dta"
+
+. drop gvkey indfmt consol popsrc datafmt curcd costat fdate
+
+. drop if missing(at) 
+{txt}(9,438 observations deleted)
+
+{com}. drop if missing(ni)
+{txt}(642 observations deleted)
+
+{com}. gen roa = ni / at 
+{txt}(396 missing values generated)
+
+{com}. gen y = year(datadate)
+
+. gen CUSIP = substr(cusip, 1, 8)
+{txt}(9 missing values generated)
+
+{com}. duplicates drop CUSIP y, force
+
+{p 0 4}{txt}Duplicates in terms of {res} CUSIP y{p_end}
+
+{txt}(213 observations deleted)
+
+{com}. drop cusip
+
+. save "/Users/yukerui/Desktop/roa.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/roa.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. use "/Users/yukerui/Desktop/summary.dta", clear
+
+. merge m:1 CUSIP y using /Users/yukerui/Desktop/roa.dta
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         178,057
+{txt}{col 9}from master{col 30}{res}          88,104{txt}  (_merge==1)
+{col 9}from using{col 30}{res}          89,953{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}         691,271{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(89,953 observations deleted)
+
+{com}. winsor2 roa, replace cut(1 99)
+
+. save "/Users/yukerui/Desktop/summary.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/summary.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. * Do descriptive statistics
+
+. * Convert variable units to percentages
+
+. replace total_mf_y = total_mf_y * 100
+{txt}(779,330 real changes made)
+
+{com}. replace passive_y = passive_y * 100
+{txt}(779,074 real changes made)
+
+{com}. replace active_y = active_y * 100
+{txt}(779,330 real changes made)
+
+{com}. replace unclassified_y = unclassified_y * 100
+{txt}(779,287 real changes made)
+
+{com}. replace ID = ID * 100
+{txt}(511,606 real changes made)
+
+{com}. 
+. duplicates drop key y, force
+
+{p 0 4}{txt}Duplicates in terms of {res} key y{p_end}
+
+{txt}(774,875 observations deleted)
+
+{com}. 
+. tabstat total_mf_y passive_y active_y unclassified_y ID poison greater DUALCLASS roa, s(mean p50 sd n) col(stat) f(%7.3f)
+
+{txt}{ralign 12:Variable} {...}
+{c |}      Mean       p50        SD         N
+{hline 13}{c +}{hline 40}
+{ralign 12:total_mf_y} {...}
+{c |}{...}
+   {res} 21.678    19.318    14.441  4500.000
+{txt}{ralign 12:passive_y} {...}
+{c |}{...}
+   {res}  2.383     1.682     2.609  4500.000
+{txt}{ralign 12:active_y} {...}
+{c |}{...}
+   {res} 16.115    14.194    11.323  4500.000
+{txt}{ralign 12:unclassifi~y} {...}
+{c |}{...}
+   {res}  3.180     2.285     3.348  4500.000
+{txt}{ralign 12:ID} {...}
+{c |}{...}
+   {res} 64.918    66.667    17.983  2695.000
+{txt}{ralign 12:poison} {...}
+{c |}{...}
+   {res}  0.014     0.000     0.119  1802.000
+{txt}{ralign 12:greater} {...}
+{c |}{...}
+   {res}  0.006     0.000     0.074  1802.000
+{txt}{ralign 12:DUALCLASS} {...}
+{c |}{...}
+   {res}  0.130     0.000     0.336  1802.000
+{txt}{ralign 12:roa} {...}
+{c |}{...}
+   {res}  0.035     0.039     0.100  3947.000
+{txt}{hline 13}{c BT}{hline 40}
+
+{com}. save "/Users/yukerui/Desktop/cleaned data.dta"
+{txt}{p 0 4 2}
+file {bf}
+/Users/yukerui/Desktop/cleaned data.dta{rm}
+saved
+{p_end}
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/yukerui/Desktop/log file1 data processing.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}27 Feb 2024, 12:27:06
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

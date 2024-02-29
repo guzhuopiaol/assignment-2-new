@@ -1,0 +1,1137 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Suqi  Kennedy\Desktop\yukerui.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 Feb 2024, 14:34:46
+
+{com}. do "C:\Users\SUQIKE~1\AppData\Local\Temp\STD3208_000000.tmp"
+{txt}
+{com}. * Generate second table
+. * Fill in missing capmay values
+. bysort key y: egen maycap = max(capmay)
+{txt}(4,469 missing values generated)
+
+{com}. 
+. gen lnmarket = ln(cap)
+{txt}(1 missing value generated)
+
+{com}. gen lnmarket2 = lnmarket^2
+{txt}(1 missing value generated)
+
+{com}. gen lnmarket3 = lnmarket^3
+{txt}(1 missing value generated)
+
+{com}. gen lnfloat = ln(adj_mrktvalue)
+{txt}
+{com}. 
+. reghdfe total_mf_y r2000 lnmarket lnmarket2 lnmarket3 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   5{txt},{res}   1670{txt}){col 67}= {res}    183.36
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.4584
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.4568
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.3966
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}   10.6418
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  total_mf_y{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} 1.755448{col 26}{space 2} .3950441{col 37}{space 1}    4.44{col 46}{space 3}0.000{col 54}{space 4} .9806144{col 67}{space 3} 2.530282
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 12.50334{col 26}{space 2} 32.93937{col 37}{space 1}    0.38{col 46}{space 3}0.704{col 54}{space 4}-52.10346{col 67}{space 3} 77.11013
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-1.433198{col 26}{space 2} 1.501318{col 37}{space 1}   -0.95{col 46}{space 3}0.340{col 54}{space 4}-4.377862{col 67}{space 3} 1.511465
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2}  .029942{col 26}{space 2} .0227875{col 37}{space 1}    1.31{col 46}{space 3}0.189{col 54}{space 4}-.0147531{col 67}{space 3}  .074637
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} 10.20093{col 26}{space 2} .6127154{col 37}{space 1}   16.65{col 46}{space 3}0.000{col 54}{space 4} 8.999155{col 67}{space 3}  11.4027
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-26.10696{col 26}{space 2} 241.6256{col 37}{space 1}   -0.11{col 46}{space 3}0.914{col 54}{space 4}-500.0279{col 67}{space 3}  447.814
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. reghdfe passive_y r2000 lnmarket lnmarket2 lnmarket3 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   5{txt},{res}   1670{txt}){col 67}= {res}    140.22
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.5651
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.5639
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.3987
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    1.7233
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}   passive_y{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} .5203848{col 26}{space 2} .0682159{col 37}{space 1}    7.63{col 46}{space 3}0.000{col 54}{space 4} .3865872{col 67}{space 3} .6541824
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-24.47259{col 26}{space 2} 5.658315{col 37}{space 1}   -4.33{col 46}{space 3}0.000{col 54}{space 4}-35.57072{col 67}{space 3}-13.37445
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2} .8958539{col 26}{space 2} .2319898{col 37}{space 1}    3.86{col 46}{space 3}0.000{col 54}{space 4} .4408324{col 67}{space 3} 1.350875
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2}-.0108636{col 26}{space 2} .0031585{col 37}{space 1}   -3.44{col 46}{space 3}0.001{col 54}{space 4}-.0170587{col 67}{space 3}-.0046686
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} 1.383268{col 26}{space 2} .1070147{col 37}{space 1}   12.93{col 46}{space 3}0.000{col 54}{space 4} 1.173371{col 67}{space 3} 1.593165
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 202.5828{col 26}{space 2} 45.24227{col 37}{space 1}    4.48{col 46}{space 3}0.000{col 54}{space 4} 113.8453{col 67}{space 3} 291.3204
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. reghdfe active_y r2000 lnmarket lnmarket2 lnmarket3 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   5{txt},{res}   1670{txt}){col 67}= {res}    132.69
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.3293
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.3274
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.2852
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    9.2849
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    active_y{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} 1.109756{col 26}{space 2} .3433922{col 37}{space 1}    3.23{col 46}{space 3}0.001{col 54}{space 4} .4362316{col 67}{space 3} 1.783281
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 38.18738{col 26}{space 2} 26.96508{col 37}{space 1}    1.42{col 46}{space 3}0.157{col 54}{space 4}-14.70155{col 67}{space 3} 91.07631
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-2.208163{col 26}{space 2} 1.224938{col 37}{space 1}   -1.80{col 46}{space 3}0.072{col 54}{space 4}-4.610739{col 67}{space 3} .1944134
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2}  .037142{col 26}{space 2} .0185308{col 37}{space 1}    2.00{col 46}{space 3}0.045{col 54}{space 4} .0007959{col 67}{space 3} .0734881
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} 7.343406{col 26}{space 2} .5063706{col 37}{space 1}   14.50{col 46}{space 3}0.000{col 54}{space 4} 6.350218{col 67}{space 3} 8.336594
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-256.6099{col 26}{space 2} 198.5133{col 37}{space 1}   -1.29{col 46}{space 3}0.196{col 54}{space 4}-645.9711{col 67}{space 3} 132.7513
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. reghdfe unclassified_y r2000 lnmarket lnmarket2 lnmarket3 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   5{txt},{res}   1670{txt}){col 67}= {res}     90.37
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.2465
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.2443
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.2065
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    2.9100
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}unclassifi~y{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} .1253073{col 26}{space 2} .1114247{col 37}{space 1}    1.12{col 46}{space 3}0.261{col 54}{space 4}-.0932395{col 67}{space 3} .3438541
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-1.211457{col 26}{space 2} 8.814702{col 37}{space 1}   -0.14{col 46}{space 3}0.891{col 54}{space 4}-18.50049{col 67}{space 3} 16.07757
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.1208896{col 26}{space 2} .3855309{col 37}{space 1}   -0.31{col 46}{space 3}0.754{col 54}{space 4}-.8770643{col 67}{space 3}  .635285
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2} .0036636{col 26}{space 2} .0056253{col 37}{space 1}    0.65{col 46}{space 3}0.515{col 54}{space 4}-.0073697{col 67}{space 3} .0146969
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} 1.474252{col 26}{space 2} .1812025{col 37}{space 1}    8.14{col 46}{space 3}0.000{col 54}{space 4} 1.118844{col 67}{space 3}  1.82966
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 27.92012{col 26}{space 2} 66.79953{col 37}{space 1}    0.42{col 46}{space 3}0.676{col 54}{space 4}-103.0995{col 67}{space 3} 158.9397
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. 
+. * Generate third table
+. egen passivesd = sd(passive_y)
+{txt}
+{com}. gen passive1 = passive_y / passivesd
+{txt}
+{com}. reghdfe passive1 r2000 lnmarket lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   3{txt},{res}   1670{txt}){col 67}= {res}    107.57
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.4892
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.4879
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.2937
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    0.7156
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    passive1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} .1871349{col 26}{space 2} .0291151{col 37}{space 1}    6.43{col 46}{space 3}0.000{col 54}{space 4} .1300289{col 67}{space 3} .2442409
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-.3629283{col 26}{space 2}  .035608{col 37}{space 1}  -10.19{col 46}{space 3}0.000{col 54}{space 4}-.4327693{col 67}{space 3}-.2930873
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} .4975652{col 26}{space 2} .0429766{col 37}{space 1}   11.58{col 46}{space 3}0.000{col 54}{space 4} .4132715{col 67}{space 3}  .581859
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 1.685381{col 26}{space 2} .5177502{col 37}{space 1}    3.26{col 46}{space 3}0.001{col 54}{space 4} .6698731{col 67}{space 3} 2.700888
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. reghdfe passive1 r2000 lnmarket lnmarket2 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   4{txt},{res}   1670{txt}){col 67}= {res}    135.35
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.5593
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.5581
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.3906
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    0.6648
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    passive1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} .1859556{col 26}{space 2} .0276331{col 37}{space 1}    6.73{col 46}{space 3}0.000{col 54}{space 4} .1317564{col 67}{space 3} .2401548
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-3.353933{col 26}{space 2} .5500899{col 37}{space 1}   -6.10{col 46}{space 3}0.000{col 54}{space 4}-4.432871{col 67}{space 3}-2.274994
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2} .0678441{col 26}{space 2} .0120144{col 37}{space 1}    5.65{col 46}{space 3}0.000{col 54}{space 4} .0442793{col 67}{space 3} .0914089
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} .5322485{col 26}{space 2} .0421888{col 37}{space 1}   12.62{col 46}{space 3}0.000{col 54}{space 4}    .4495{col 67}{space 3} .6149969
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 34.05019{col 26}{space 2} 5.936239{col 37}{space 1}    5.74{col 46}{space 3}0.000{col 54}{space 4} 22.40694{col 67}{space 3} 45.69345
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. reghdfe passive1 r2000 lnmarket lnmarket2 lnmarket3 lnfloat, absorb(y) vce(cluster CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}HDFE Linear regression{col 51}Number of obs{col 67}= {res}     4,499
+{txt}Absorbing 1 HDFE group{col 51}F({res}   5{txt},{res}   1670{txt}){col 67}= {res}    140.22
+{txt}Statistics robust to heteroskedasticity{col 51}Prob > F{col 67}= {res}    0.0000
+{txt}{col 51}R-squared{col 67}= {res}    0.5651
+{txt}{col 51}Adj R-squared{col 67}= {res}    0.5639
+{txt}{col 51}Within R-sq.{col 67}= {res}    0.3987
+{txt}{col 1}Number of clusters ({res}CUSIP{txt}) {col 30}= {res}     1,671{txt}{col 51}Root MSE{col 67}= {res}    0.6604
+
+{txt}{ralign 78:(Std. err. adjusted for {res:1,671} clusters in {res:CUSIP})}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    passive1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}r2000 {c |}{col 14}{res}{space 2} .1994247{col 26}{space 2}  .026142{col 37}{space 1}    7.63{col 46}{space 3}0.000{col 54}{space 4}   .14815{col 67}{space 3} .2506993
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-9.378516{col 26}{space 2}  2.16841{col 37}{space 1}   -4.33{col 46}{space 3}0.000{col 54}{space 4} -13.6316{col 67}{space 3}-5.125428
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2} .3433139{col 26}{space 2} .0889044{col 37}{space 1}    3.86{col 46}{space 3}0.000{col 54}{space 4} .1689382{col 67}{space 3} .5176897
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2}-.0041632{col 26}{space 2} .0012104{col 37}{space 1}   -3.44{col 46}{space 3}0.001{col 54}{space 4}-.0065373{col 67}{space 3}-.0017891
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} .5301035{col 26}{space 2} .0410107{col 37}{space 1}   12.93{col 46}{space 3}0.000{col 54}{space 4} .4496656{col 67}{space 3} .6105414
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 77.63488{col 26}{space 2} 17.33798{col 37}{space 1}    4.48{col 46}{space 3}0.000{col 54}{space 4} 43.62841{col 67}{space 3} 111.6414
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. 
+. * Generate forth table
+. egen IDsd = sd(ID)
+{txt}
+{com}. gen ID1 = ID / IDsd
+{txt}(1,805 missing values generated)
+
+{com}. ivreghdfe ID1 lnmarket lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1035{txt}{col 55}Number of obs = {res}    2695
+{txt}{col 55}F(  3,  1034) = {res}    6.52
+{txt}{col 55}Prob > F      = {res}  0.0002
+{txt}Total (centered) SS     = {res} 2452.356264{txt}{col 55}Centered R2   = {res} -5.3049
+{txt}Total (uncentered) SS   = {res} 2452.356264{txt}{col 55}Uncentered R2 = {res} -5.3049
+{txt}Residual SS             = {res} 15461.79089{txt}{col 55}Root MSE      = {res}   2.401
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 3.179347{col 26}{space 2}  1.15093{col 37}{space 1}    2.76{col 46}{space 3}0.006{col 54}{space 4} .9209221{col 67}{space 3} 5.437772
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 1.128034{col 26}{space 2} .5087092{col 37}{space 1}    2.22{col 46}{space 3}0.027{col 54}{space 4} .1298142{col 67}{space 3} 2.126255
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.2323958{col 26}{space 2} .4274024{col 37}{space 1}   -0.54{col 46}{space 3}0.587{col 54}{space 4}-1.071071{col 67}{space 3} .6062793
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   8.294
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0040
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  17.163
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   8.465
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1035{txt}{col 55}Number of obs = {res}    2695
+{txt}{col 55}F(  4,  1034) = {res}    4.29
+{txt}{col 55}Prob > F      = {res}  0.0019
+{txt}Total (centered) SS     = {res} 2452.356264{txt}{col 55}Centered R2   = {res} -6.6047
+{txt}Total (uncentered) SS   = {res} 2452.356264{txt}{col 55}Uncentered R2 = {res} -6.6047
+{txt}Residual SS             = {res} 18649.36194{txt}{col 55}Root MSE      = {res}   2.637
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2}  3.89901{col 26}{space 2} 1.673748{col 37}{space 1}    2.33{col 46}{space 3}0.020{col 54}{space 4} .6146797{col 67}{space 3} 7.183341
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 14.73998{col 26}{space 2} 8.639449{col 37}{space 1}    1.71{col 46}{space 3}0.088{col 54}{space 4} -2.21287{col 67}{space 3} 31.69284
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.2984713{col 26}{space 2} .1778183{col 37}{space 1}   -1.68{col 46}{space 3}0.094{col 54}{space 4}-.6473973{col 67}{space 3} .0504546
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.5084806{col 26}{space 2} .6146069{col 37}{space 1}   -0.83{col 46}{space 3}0.408{col 54}{space 4}  -1.7145{col 67}{space 3} .6975385
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   5.855
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0155
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  13.798
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   5.921
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnmarket3 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1035{txt}{col 55}Number of obs = {res}    2695
+{txt}{col 55}F(  5,  1034) = {res}    4.83
+{txt}{col 55}Prob > F      = {res}  0.0002
+{txt}Total (centered) SS     = {res} 2452.356264{txt}{col 55}Centered R2   = {res} -4.7154
+{txt}Total (uncentered) SS   = {res} 2452.356264{txt}{col 55}Uncentered R2 = {res} -4.7154
+{txt}Residual SS             = {res} 14016.28791{txt}{col 55}Root MSE      = {res}   2.286
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 3.356782{col 26}{space 2}  1.14102{col 37}{space 1}    2.94{col 46}{space 3}0.003{col 54}{space 4} 1.117803{col 67}{space 3} 5.595762
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 40.22201{col 26}{space 2} 23.15846{col 37}{space 1}    1.74{col 46}{space 3}0.083{col 54}{space 4}-5.220937{col 67}{space 3} 85.66496
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-1.489955{col 26}{space 2} .8891848{col 37}{space 1}   -1.68{col 46}{space 3}0.094{col 54}{space 4}-3.234768{col 67}{space 3} .2548572
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2} .0182596{col 26}{space 2} .0113131{col 37}{space 1}    1.61{col 46}{space 3}0.107{col 54}{space 4}-.0039397{col 67}{space 3} .0404588
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.3350358{col 26}{space 2} .4378368{col 37}{space 1}   -0.77{col 46}{space 3}0.444{col 54}{space 4}-1.194186{col 67}{space 3} .5241142
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   9.729
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0018
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  18.557
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   9.931
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnmarket3 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        9{col 27}{space 1}        0{col 39}{result}{space 1}        9{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. 
+. * Generate fifth table
+. preserve 
+{txt}
+{com}. drop if y > 2002
+{txt}(2,000 observations deleted)
+
+{com}. ivreghdfe ID1 lnmarket lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   826{txt}{col 55}Number of obs = {res}    1528
+{txt}{col 55}F(  3,   825) = {res}   10.67
+{txt}{col 55}Prob > F      = {res}  0.0000
+{txt}Total (centered) SS     = {res} 1722.213884{txt}{col 55}Centered R2   = {res} -2.2514
+{txt}Total (uncentered) SS   = {res} 1722.213884{txt}{col 55}Uncentered R2 = {res} -2.2514
+{txt}Residual SS             = {res} 5599.626162{txt}{col 55}Root MSE      = {res}   1.919
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 3.599483{col 26}{space 2} .9992014{col 37}{space 1}    3.60{col 46}{space 3}0.000{col 54}{space 4} 1.638207{col 67}{space 3} 5.560759
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} .7162746{col 26}{space 2} .1828126{col 37}{space 1}    3.92{col 46}{space 3}0.000{col 54}{space 4} .3574421{col 67}{space 3} 1.075107
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.0816221{col 26}{space 2} .2352934{col 37}{space 1}   -0.35{col 46}{space 3}0.729{col 54}{space 4}-.5434662{col 67}{space 3} .3802221
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  17.216
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  20.381
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  17.833
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   826{txt}{col 55}Number of obs = {res}    1528
+{txt}{col 55}F(  4,   825) = {res}    7.02
+{txt}{col 55}Prob > F      = {res}  0.0000
+{txt}Total (centered) SS     = {res} 1722.213884{txt}{col 55}Centered R2   = {res} -2.4533
+{txt}Total (uncentered) SS   = {res} 1722.213884{txt}{col 55}Uncentered R2 = {res} -2.4533
+{txt}Residual SS             = {res}  5947.31963{txt}{col 55}Root MSE      = {res}   1.979
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 4.310267{col 26}{space 2} 1.132656{col 37}{space 1}    3.81{col 46}{space 3}0.000{col 54}{space 4}  2.08704{col 67}{space 3} 6.533495
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 10.22489{col 26}{space 2} 3.548562{col 37}{space 1}    2.88{col 46}{space 3}0.004{col 54}{space 4} 3.259622{col 67}{space 3} 17.19016
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.2090987{col 26}{space 2} .0756985{col 37}{space 1}   -2.76{col 46}{space 3}0.006{col 54}{space 4} -.357683{col 67}{space 3}-.0605143
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.2533077{col 26}{space 2} .2834073{col 37}{space 1}   -0.89{col 46}{space 3}0.372{col 54}{space 4}-.8095919{col 67}{space 3} .3029764
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  20.239
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  18.579
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  21.175
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnmarket3 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   826{txt}{col 55}Number of obs = {res}    1528
+{txt}{col 55}F(  5,   825) = {res}    5.59
+{txt}{col 55}Prob > F      = {res}  0.0000
+{txt}Total (centered) SS     = {res} 1722.213884{txt}{col 55}Centered R2   = {res} -1.6721
+{txt}Total (uncentered) SS   = {res} 1722.213884{txt}{col 55}Uncentered R2 = {res} -1.6721
+{txt}Residual SS             = {res} 4601.889651{txt}{col 55}Root MSE      = {res}   1.741
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 3.814608{col 26}{space 2} .9864986{col 37}{space 1}    3.87{col 46}{space 3}0.000{col 54}{space 4} 1.878266{col 67}{space 3} 5.750951
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 39.28984{col 26}{space 2} 14.36126{col 37}{space 1}    2.74{col 46}{space 3}0.006{col 54}{space 4} 11.10093{col 67}{space 3} 67.47875
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-1.536145{col 26}{space 2} .5858912{col 37}{space 1}   -2.62{col 46}{space 3}0.009{col 54}{space 4}-2.686158{col 67}{space 3}-.3861319
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2} .0199337{col 26}{space 2} .0079278{col 37}{space 1}    2.51{col 46}{space 3}0.012{col 54}{space 4} .0043726{col 67}{space 3} .0354948
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.1550737{col 26}{space 2} .2400256{col 37}{space 1}   -0.65{col 46}{space 3}0.518{col 54}{space 4}-.6262064{col 67}{space 3} .3160591
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  21.130
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  25.278
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  21.978
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnmarket3 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. restore
+{txt}
+{com}. 
+. preserve
+{txt}
+{com}. drop if y < 2003
+{txt}(2,500 observations deleted)
+
+{com}. ivreghdfe ID1 lnmarket lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   540{txt}{col 55}Number of obs = {res}    1167
+{txt}{col 55}F(  3,   539) = {res}    0.41
+{txt}{col 55}Prob > F      = {res}  0.7458
+{txt}Total (centered) SS     = {res} 730.1423802{txt}{col 55}Centered R2   = {res}-29.5175
+{txt}Total (uncentered) SS   = {res} 730.1423802{txt}{col 55}Uncentered R2 = {res}-29.5175
+{txt}Residual SS             = {res} 22282.09045{txt}{col 55}Root MSE      = {res}   4.383
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 5.256861{col 26}{space 2}  7.65317{col 37}{space 1}    0.69{col 46}{space 3}0.492{col 54}{space 4}-9.776835{col 67}{space 3} 20.29056
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 3.755196{col 26}{space 2}  5.90763{col 37}{space 1}    0.64{col 46}{space 3}0.525{col 54}{space 4}-7.849605{col 67}{space 3}    15.36
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-2.380278{col 26}{space 2} 4.536889{col 37}{space 1}   -0.52{col 46}{space 3}0.600{col 54}{space 4}-11.29243{col 67}{space 3} 6.531873
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   0.474
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.4913
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}   1.427
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   0.472
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        4{col 27}{space 1}        0{col 39}{result}{space 1}        4{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   540{txt}{col 55}Number of obs = {res}    1167
+{txt}{col 55}F(  4,   539) = {res}    0.61
+{txt}{col 55}Prob > F      = {res}  0.6577
+{txt}Total (centered) SS     = {res} 730.1423802{txt}{col 55}Centered R2   = {res}-15.0349
+{txt}Total (uncentered) SS   = {res} 730.1423802{txt}{col 55}Uncentered R2 = {res}-15.0349
+{txt}Residual SS             = {res}  11707.7339{txt}{col 55}Root MSE      = {res}   3.178
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 4.737919{col 26}{space 2} 3.889583{col 37}{space 1}    1.22{col 46}{space 3}0.224{col 54}{space 4} -2.90268{col 67}{space 3} 12.37852
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 46.81036{col 26}{space 2} 45.59054{col 37}{space 1}    1.03{col 46}{space 3}0.305{col 54}{space 4}-42.74654{col 67}{space 3} 136.3673
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.9724529{col 26}{space 2} .9553456{col 37}{space 1}   -1.02{col 46}{space 3}0.309{col 54}{space 4} -2.84911{col 67}{space 3}  .904204
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} -2.87597{col 26}{space 2} 3.023102{col 37}{space 1}   -0.95{col 46}{space 3}0.342{col 54}{space 4}-8.814475{col 67}{space 3} 3.062535
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   1.532
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.2158
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}   2.774
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   1.527
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        4{col 27}{space 1}        0{col 39}{result}{space 1}        4{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe ID1 lnmarket lnmarket2 lnmarket3 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}   540{txt}{col 55}Number of obs = {res}    1167
+{txt}{col 55}F(  5,   539) = {res}    1.35
+{txt}{col 55}Prob > F      = {res}  0.2429
+{txt}Total (centered) SS     = {res} 730.1423802{txt}{col 55}Centered R2   = {res} -5.1519
+{txt}Total (uncentered) SS   = {res} 730.1423802{txt}{col 55}Uncentered R2 = {res} -5.1519
+{txt}Residual SS             = {res} 4491.766867{txt}{col 55}Root MSE      = {res}   1.969
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}         ID1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} 3.090937{col 26}{space 2} 1.314031{col 37}{space 1}    2.35{col 46}{space 3}0.019{col 54}{space 4} .5096875{col 67}{space 3} 5.672186
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 192.9744{col 26}{space 2} 99.23453{col 37}{space 1}    1.94{col 46}{space 3}0.052{col 54}{space 4}-1.959411{col 67}{space 3} 387.9082
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-8.028384{col 26}{space 2} 4.174909{col 37}{space 1}   -1.92{col 46}{space 3}0.055{col 54}{space 4}-16.22947{col 67}{space 3} .1727025
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2} .1116363{col 26}{space 2}  .058645{col 37}{space 1}    1.90{col 46}{space 3}0.057{col 54}{space 4}-.0035645{col 67}{space 3} .2268371
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} -1.34159{col 26}{space 2}  .795645{col 37}{space 1}   -1.69{col 46}{space 3}0.092{col 54}{space 4}-2.904535{col 67}{space 3}  .221355
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}   6.037
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0140
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}   7.715
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}   6.260
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnmarket3 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        4{col 27}{space 1}        0{col 39}{result}{space 1}        4{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. restore
+{txt}
+{com}. 
+. * Generate sixth table
+. egen greatersd = sd(greater)
+{txt}
+{com}. gen greater1 =  greater / greatersd
+{txt}(2,698 missing values generated)
+
+{com}. ivreghdfe greater1 lnmarket lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  3,  1036) = {res}    2.26
+{txt}{col 55}Prob > F      = {res}  0.0794
+{txt}Total (centered) SS     = {res} 1790.355982{txt}{col 55}Centered R2   = {res} -0.1779
+{txt}Total (uncentered) SS   = {res} 1790.355982{txt}{col 55}Uncentered R2 = {res} -0.1779
+{txt}Residual SS             = {res} 2108.787352{txt}{col 55}Root MSE      = {res}   1.084
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    greater1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} .6183779{col 26}{space 2} .2760515{col 37}{space 1}    2.24{col 46}{space 3}0.025{col 54}{space 4} .0766941{col 67}{space 3} 1.160062
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} .1808361{col 26}{space 2} .1074355{col 37}{space 1}    1.68{col 46}{space 3}0.093{col 54}{space 4}-.0299798{col 67}{space 3}  .391652
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.2756775{col 26}{space 2} .1559514{col 37}{space 1}   -1.77{col 46}{space 3}0.077{col 54}{space 4}-.5816942{col 67}{space 3} .0303392
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  17.946
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  33.161
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  18.663
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe greater1 lnmarket lnmarket2 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  4,  1036) = {res}    1.68
+{txt}{col 55}Prob > F      = {res}  0.1518
+{txt}Total (centered) SS     = {res} 1790.355982{txt}{col 55}Centered R2   = {res} -0.1967
+{txt}Total (uncentered) SS   = {res} 1790.355982{txt}{col 55}Uncentered R2 = {res} -0.1967
+{txt}Residual SS             = {res} 2142.545125{txt}{col 55}Root MSE      = {res}   1.093
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    greater1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} .6837835{col 26}{space 2} .3197686{col 37}{space 1}    2.14{col 46}{space 3}0.033{col 54}{space 4} .0563155{col 67}{space 3} 1.311251
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 1.978925{col 26}{space 2} 1.571189{col 37}{space 1}    1.26{col 46}{space 3}0.208{col 54}{space 4}-1.104151{col 67}{space 3} 5.062001
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.0393952{col 26}{space 2} .0323139{col 37}{space 1}   -1.22{col 46}{space 3}0.223{col 54}{space 4}-.1028034{col 67}{space 3} .0240129
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}-.3299447{col 26}{space 2} .1927399{col 37}{space 1}   -1.71{col 46}{space 3}0.087{col 54}{space 4}-.7081497{col 67}{space 3} .0482603
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  14.697
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0001
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  30.419
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  15.107
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe greater1 lnmarket lnmarket2 lnmarket3 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  5,  1036) = {res}    1.44
+{txt}{col 55}Prob > F      = {res}  0.2074
+{txt}Total (centered) SS     = {res} 1790.355982{txt}{col 55}Centered R2   = {res} -0.1675
+{txt}Total (uncentered) SS   = {res} 1790.355982{txt}{col 55}Uncentered R2 = {res} -0.1675
+{txt}Residual SS             = {res} 2090.236198{txt}{col 55}Root MSE      = {res}    1.08
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    greater1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2} .6365037{col 26}{space 2}  .277282{col 37}{space 1}    2.30{col 46}{space 3}0.022{col 54}{space 4} .0924053{col 67}{space 3} 1.180602
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2} 6.234263{col 26}{space 2} 6.080202{col 37}{space 1}    1.03{col 46}{space 3}0.305{col 54}{space 4}-5.696654{col 67}{space 3} 18.16518
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2}-.2301396{col 26}{space 2} .2374466{col 37}{space 1}   -0.97{col 46}{space 3}0.333{col 54}{space 4}-.6960707{col 67}{space 3} .2357915
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2} .0028161{col 26}{space 2} .0030683{col 37}{space 1}    0.92{col 46}{space 3}0.359{col 54}{space 4}-.0032048{col 67}{space 3}  .008837
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} -.303161{col 26}{space 2} .1640642{col 37}{space 1}   -1.85{col 46}{space 3}0.065{col 54}{space 4} -.625097{col 67}{space 3} .0187751
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  22.753
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  38.002
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  23.863
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnmarket3 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. 
+. 
+. * Generate seventh table
+. egen DUALCLASSsd = sd(DUALCLASS)
+{txt}
+{com}. gen DUALCLASS1 =  DUALCLASS / DUALCLASSsd
+{txt}(2,698 missing values generated)
+
+{com}. ivreghdfe DUALCLASS1 lnmarket lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  3,  1036) = {res}    5.20
+{txt}{col 55}Prob > F      = {res}  0.0014
+{txt}Total (centered) SS     = {res} 1791.351965{txt}{col 55}Centered R2   = {res} -1.0793
+{txt}Total (uncentered) SS   = {res} 1791.351965{txt}{col 55}Uncentered R2 = {res} -1.0793
+{txt}Residual SS             = {res} 3724.817218{txt}{col 55}Root MSE      = {res}   1.441
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  DUALCLASS1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2}-1.542683{col 26}{space 2} .4786866{col 37}{space 1}   -3.22{col 46}{space 3}0.001{col 54}{space 4}-2.481989{col 67}{space 3}-.6033775
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-.6124196{col 26}{space 2} .2278821{col 37}{space 1}   -2.69{col 46}{space 3}0.007{col 54}{space 4}-1.059583{col 67}{space 3}-.1652565
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} .4427546{col 26}{space 2}  .294672{col 37}{space 1}    1.50{col 46}{space 3}0.133{col 54}{space 4}-.1354674{col 67}{space 3} 1.020977
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  17.946
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  33.161
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  18.663
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe DUALCLASS1 lnmarket lnmarket2 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  4,  1036) = {res}    3.67
+{txt}{col 55}Prob > F      = {res}  0.0056
+{txt}Total (centered) SS     = {res} 1791.351965{txt}{col 55}Centered R2   = {res} -1.1586
+{txt}Total (uncentered) SS   = {res} 1791.351965{txt}{col 55}Uncentered R2 = {res} -1.1586
+{txt}Residual SS             = {res} 3866.757883{txt}{col 55}Root MSE      = {res}   1.469
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  DUALCLASS1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2}-1.787042{col 26}{space 2} .5781414{col 37}{space 1}   -3.09{col 46}{space 3}0.002{col 54}{space 4}-2.921504{col 67}{space 3}-.6525808
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-7.330189{col 26}{space 2}   3.3593{col 37}{space 1}   -2.18{col 46}{space 3}0.029{col 54}{space 4}  -13.922{col 67}{space 3}-.7383801
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2} .1471829{col 26}{space 2} .0695706{col 37}{space 1}    2.12{col 46}{space 3}0.035{col 54}{space 4} .0106675{col 67}{space 3} .2836983
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2}    .6455{col 26}{space 2} .3705314{col 37}{space 1}    1.74{col 46}{space 3}0.082{col 54}{space 4}-.0815775{col 67}{space 3} 1.372578
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  14.697
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0001
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  30.419
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  15.107
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. ivreghdfe DUALCLASS1 lnmarket lnmarket2 lnmarket3 lnfloat (passive1 = r2000), absorb(y) cluster(CUSIP)
+{res}{txt}({browse "http://scorreia.com/research/hdfe.pdf":MWFE estimator} converged in 1 iterations)
+{res}
+{txt}IV (2SLS) estimation
+{hline 20}
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on CUSIP
+
+Number of clusters (CUSIP) = {col 33}{res}  1037{txt}{col 55}Number of obs = {res}    1802
+{txt}{col 55}F(  5,  1036) = {res}    3.55
+{txt}{col 55}Prob > F      = {res}  0.0034
+{txt}Total (centered) SS     = {res} 1791.351965{txt}{col 55}Centered R2   = {res} -0.8840
+{txt}Total (uncentered) SS   = {res} 1791.351965{txt}{col 55}Uncentered R2 = {res} -0.8840
+{txt}Residual SS             = {res} 3374.981612{txt}{col 55}Root MSE      = {res}   1.372
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  DUALCLASS1{col 14}{c |} Coefficient{col 26}  std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}passive1 {c |}{col 14}{res}{space 2}-1.610515{col 26}{space 2} .4534008{col 37}{space 1}   -3.55{col 46}{space 3}0.000{col 54}{space 4}-2.500203{col 67}{space 3}-.7208263
+{txt}{space 4}lnmarket {c |}{col 14}{res}{space 2}-23.21827{col 26}{space 2} 11.61494{col 37}{space 1}   -2.00{col 46}{space 3}0.046{col 54}{space 4}-46.00976{col 67}{space 3}-.4267731
+{txt}{space 3}lnmarket2 {c |}{col 14}{res}{space 2} .8593618{col 26}{space 2} .4501017{col 37}{space 1}    1.91{col 46}{space 3}0.057{col 54}{space 4}-.0238532{col 67}{space 3} 1.742577
+{txt}{space 3}lnmarket3 {c |}{col 14}{res}{space 2}-.0105145{col 26}{space 2} .0057704{col 37}{space 1}   -1.82{col 46}{space 3}0.069{col 54}{space 4}-.0218376{col 67}{space 3} .0008086
+{txt}{space 5}lnfloat {c |}{col 14}{res}{space 2} .5454981{col 26}{space 2} .2901851{col 37}{space 1}    1.88{col 46}{space 3}0.060{col 54}{space 4}-.0239194{col 67}{space 3} 1.114916
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{help ivreg2##idtest:Underidentification test} (Kleibergen-Paap rk LM statistic):{res}{col 71}  22.753
+{txt}{col 52}Chi-sq({res}1{txt}) P-val =  {res}{col 73}0.0000
+{txt}{hline 78}
+{help ivreg2##widtest:Weak identification test} (Cragg-Donald Wald F statistic):{res}{col 71}  38.002
+{txt}                         (Kleibergen-Paap rk Wald F statistic):{res}{col 71}  23.863
+{txt}Stock-Yogo weak ID test critical values:{res}{txt}{col 42}10% maximal IV size{res}{col 73} 16.38
+{txt}{col 42}15% maximal IV size{res}{col 73}  8.96
+{txt}{col 42}20% maximal IV size{res}{col 73}  6.66
+{txt}{col 42}25% maximal IV size{res}{col 73}  5.53
+{txt}Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+{hline 78}
+{help ivreg2##overidtests:Hansen J statistic} (overidentification test of all instruments):{res}{col 71}   0.000
+{txt}{col 50}(equation exactly identified)
+{hline 78}
+Instrumented:{col 23}passive1
+Included instruments:{col 23}lnmarket lnmarket2 lnmarket3 lnfloat
+Excluded instruments:{col 23}r2000
+{help ivreg2##partial:Partialled-out}:{col 23}_cons
+{col 23}nb: total SS, model F and R2s are after partialling-out;
+{col 23}    any {help ivreg2##s_small:small-sample adjustments} include partialled-out
+{col 23}    variables in regressor count K
+{hline 78}
+{res}
+{txt}Absorbed degrees of freedom:
+{res}{col 1}{text}{hline 13}{c TT}{hline 12}{hline 12}{hline 14}{hline 1}{c TRC}
+{col 1}{text} Absorbed FE{col 14}{c |} Categories{col 27} - Redundant{col 39}  = Num. Coefs{col 54}{c |}
+{res}{col 1}{text}{hline 13}{c +}{hline 12}{hline 12}{hline 14}{hline 1}{c RT}
+{col 1}{text}           y{col 14}{c |}{space 1}        5{col 27}{space 1}        0{col 39}{result}{space 1}        5{col 53}{text} {col 54}{c |}
+{res}{col 1}{text}{hline 13}{c BT}{hline 12}{hline 12}{hline 14}{hline 1}{c BRC}
+{res}{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Suqi  Kennedy\Desktop\yukerui.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}27 Feb 2024, 14:35:00
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
