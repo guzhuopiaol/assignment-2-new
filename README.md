@@ -6,10 +6,10 @@ Dofile provides the state code of this assignment, which covers data processing 
 
 Log file provides the running records of data processing, summary statistics and regression.
 
-Assignment 2 final results provides organized summary statistics and regression results.
+Final results provides organized summary statistics and regression results.
 
 Cleaned data provides cleaned data.
 
-Assignment 2 reports provide personal reports.
+Report provide personal reports.
 
 Note: the raw data is shared by dropbox. The link is https://www.dropbox.com/scl/fo/txlw6dimfigttph7bgyg0/h?rlkey=5yzb47i5ij2l38x232pon7mqr&dl=0
